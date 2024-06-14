@@ -21,12 +21,16 @@ export default class UsersController {
 
   public async show({ request }: HttpContextContract) {
     const userId = request.param("id");
-    const user = await User.find(userId);
+    const user = await User.findOrFail(userId);
     return user;
   }
 
-  public async update({}: HttpContextContract) {
-    return "update";
+  public async update({ request }: HttpContextContract) {
+    const userId = request.param("id");
+    const body = request.only(["name", "email", "password"]);
+    const user = await User.findOrFail(userId);
+    await user.merge(body).save();
+    return user;
   }
 
   public async destroy({}: HttpContextContract) {
